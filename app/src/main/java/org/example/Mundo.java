@@ -48,7 +48,7 @@ public class Mundo {
   }
 
   public void desenhar(Renderizador renderizador) {
-    renderizador.limpar(0x101010); // Um fundo cinza escuro
+    renderizador.limpar(0x101010);
     for (Pixel p : pixels) {
       p.desenhar(renderizador);
     }
