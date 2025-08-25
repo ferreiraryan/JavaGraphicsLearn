@@ -39,17 +39,12 @@ public class App extends JPanel implements ActionListener {
   }
 
   private void iniciarGameLoop() {
-    // Cria um timer que vai chamar o método 'actionPerformed' a cada 16ms (aprox.
-    // 60 FPS)
     gameLoop = new Timer(16, this);
     gameLoop.start();
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    // Aqui você poderia adicionar lógica de atualização (ex: mundo.atualizar())
-
-    // Apenas redesenha a tela
     repaint();
   }
 
@@ -63,7 +58,7 @@ public class App extends JPanel implements ActionListener {
   }
 
   public static void main(String[] args) {
-    JFrame frame = new JFrame("POO com Pixels");
+    JFrame frame = new JFrame("Pixels");
     App painel = new App();
     frame.add(painel);
     frame.pack();

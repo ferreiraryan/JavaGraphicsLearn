@@ -33,8 +33,13 @@ public class Mundo {
 
   public void notificarArrastado(int mouseX, int mouseY) {
     if (pixelArrastado != null) {
-      pixelArrastado.x = mouseX - offsetX;
-      pixelArrastado.y = mouseY - offsetY;
+      int novoX = mouseX - offsetX;
+      int novoY = mouseY - offsetY;
+
+      if (isMovimentoValido(pixelArrastado, novoX, novoY)) {
+        pixelArrastado.x = novoX;
+        pixelArrastado.y = novoY;
+      }
 
     }
   }
@@ -43,13 +48,20 @@ public class Mundo {
     pixelArrastado = null;
   }
 
-  private boolean isPosicaoLivre(int vx, int vy, Pixel pixelAIgnorar) {
-    for (Pixel p : pixels) {
-      if (p == pixelAIgnorar) {
+  private boolean isMovimentoValido(Pixel pixelEmMovimento, int novoX, int novoY) {
+    if (novoX < 0 || (novoX + pixelEmMovimento.tamanho) > App.LARGURA ||
+        novoY < 0 || (novoY + pixelEmMovimento.tamanho) > App.ALTURA) {
+      return false;
+    }
+
+    for (Pixel outroPixel : pixels) {
+      if (outroPixel == pixelEmMovimento) {
         continue;
       }
 
-      if (p.x == vx && p.y == vy) {
+      Pixel cloneNaNovaPosicao = new Pixel(novoX, novoY, pixelEmMovimento.tamanho, 0);
+
+      if (cloneNaNovaPosicao.colideCom(outroPixel)) {
         return false;
       }
     }

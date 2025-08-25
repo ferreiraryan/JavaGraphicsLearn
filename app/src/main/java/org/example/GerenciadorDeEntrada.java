@@ -24,7 +24,6 @@ public class GerenciadorDeEntrada implements MouseListener, MouseMotionListener 
   @Override
   public void mouseDragged(MouseEvent e) {
     mundo.notificarArrastado(e.getX(), e.getY());
-
   }
 
   // Métodos não utilizados
