@@ -5,13 +5,17 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import javax.swing.Timer;
 
-public class App extends JPanel {
+public class App extends JPanel implements ActionListener {
   private static final int LARGURA = 800;
   private static final int ALTURA = 600;
   public static final int TAMANHO_PIXEL = 10;
+  private Timer gameLoop;
 
   private final BufferedImage imagem;
   private final int[] pixels;
@@ -31,6 +35,22 @@ public class App extends JPanel {
 
     addMouseListener(gerenciadorDeEntrada);
     addMouseMotionListener(gerenciadorDeEntrada);
+    iniciarGameLoop();
+  }
+
+  private void iniciarGameLoop() {
+    // Cria um timer que vai chamar o método 'actionPerformed' a cada 16ms (aprox.
+    // 60 FPS)
+    gameLoop = new Timer(16, this);
+    gameLoop.start();
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    // Aqui você poderia adicionar lógica de atualização (ex: mundo.atualizar())
+
+    // Apenas redesenha a tela
+    repaint();
   }
 
   @Override
