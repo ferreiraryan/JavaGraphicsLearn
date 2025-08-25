@@ -13,9 +13,7 @@ public class GerenciadorDeEntrada implements MouseListener, MouseMotionListener 
 
   @Override
   public void mousePressed(MouseEvent e) {
-    int vx = e.getX() / App.TAMANHO_PIXEL;
-    int vy = e.getY() / App.TAMANHO_PIXEL;
-    mundo.notificarPressionado(vx, vy);
+    mundo.notificarPressionado(e.getX(), e.getY());
   }
 
   @Override
@@ -25,13 +23,8 @@ public class GerenciadorDeEntrada implements MouseListener, MouseMotionListener 
 
   @Override
   public void mouseDragged(MouseEvent e) {
-    int vx = e.getX() / App.TAMANHO_PIXEL;
-    int vy = e.getY() / App.TAMANHO_PIXEL;
-    mundo.notificarArrastado(vx, vy);
+    mundo.notificarArrastado(e.getX(), e.getY());
 
-    // Repaint é chamado no JPanel (App), então o gerenciador não deveria chamá-lo.
-    // O ideal é ter um loop de atualização no App.
-    // Por enquanto, a lógica de arrastar não vai redesenhar a tela.
   }
 
   // Métodos não utilizados

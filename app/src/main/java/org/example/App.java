@@ -12,8 +12,8 @@ import java.awt.image.DataBufferInt;
 import javax.swing.Timer;
 
 public class App extends JPanel implements ActionListener {
-  private static final int LARGURA = 800;
-  private static final int ALTURA = 600;
+  public static final int LARGURA = 800;
+  public static final int ALTURA = 600;
   public static final int TAMANHO_PIXEL = 10;
   private Timer gameLoop;
 
