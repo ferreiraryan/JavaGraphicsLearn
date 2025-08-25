@@ -4,19 +4,99 @@ import java.util.ArrayList;
 
 public class Mundo {
   private final ArrayList<Pixel> pixels = new ArrayList<>();
+
   private Pixel pixelArrastado = null;
+
+  private int mouseX, mouseY;
   private int offsetX, offsetY;
 
+  private static final double K_MOLA = 0.10;
+
+  private static final double FRICAO = 0.95;
+
   public Mundo() {
-    pixels.add(new Pixel(100, 150, 10, 0xFFFFFF));
-    pixels.add(new Pixel(250, 150, 20, 0xFF0000));
+    pixels.add(new Pixel(100.0, 150.0, 20, 0xFFFFFF));
+    pixels.add(new Pixel(250.0, 150.0, 40, 0xFF0000));
+    pixels.add(new Pixel(400.0, 150.0, 60, 0x0000FF));
+  }
+
+  public void atualizar() {
+    for (Pixel p : pixels) {
+      if (p == pixelArrastado) {
+        double distCentroX = mouseX - (p.x + p.tamanho / 2.0);
+        double distCentroY = mouseY - (p.y + p.tamanho / 2.0);
+
+        double forcaX = distCentroX * K_MOLA;
+        double forcaY = distCentroY * K_MOLA;
+
+        p.vx += forcaX / p.massa;
+        p.vy += forcaY / p.massa;
+      }
+
+      p.vx *= FRICAO;
+      p.vy *= FRICAO;
+
+      p.x += p.vx;
+      p.y += p.vy;
+    }
+
+    for (int i = 0; i < 4; i++) {
+      for (Pixel p : pixels) {
+        resolverColisoesPara(p);
+      }
+    }
   }
 
   public void desenhar(Renderizador renderizador) {
-    renderizador.limpar(0);
+    renderizador.limpar(0x101010); // Um fundo cinza escuro
     for (Pixel p : pixels) {
       p.desenhar(renderizador);
     }
+  }
+
+  private void resolverColisoesPara(Pixel p) {
+    for (Pixel obstaculo : pixels) {
+      if (p == obstaculo)
+        continue;
+
+      if (p.colideCom(obstaculo)) {
+        double overlapX = Math.min(p.x + p.tamanho, obstaculo.x + obstaculo.tamanho) - Math.max(p.x, obstaculo.x);
+        double overlapY = Math.min(p.y + p.tamanho, obstaculo.y + obstaculo.tamanho) - Math.max(p.y, obstaculo.y);
+
+        if (overlapX < overlapY) {
+          if (p.x < obstaculo.x)
+            p.x -= overlapX;
+          else
+            p.x += overlapX;
+        } else {
+          if (p.y < obstaculo.y)
+            p.y -= overlapY;
+          else
+            p.y += overlapY;
+        }
+      }
+    }
+    if (p.x < 0) {
+      p.x = 0;
+      p.vx *= -0.5;
+    }
+    if (p.y < 0) {
+      p.y = 0;
+      p.vy *= -0.5;
+    }
+    if (p.x + p.tamanho > App.LARGURA) {
+      p.x = App.LARGURA - p.tamanho;
+      p.vx *= -0.5;
+    }
+    if (p.y + p.tamanho > App.ALTURA) {
+      p.y = App.ALTURA - p.tamanho;
+      p.vy *= -0.5;
+    }
+  }
+
+  public void atualizarPosicaoMouse(int x, int y) {
+    this.mouseX = x;
+    this.mouseY = y;
   }
 
   public void notificarPressionado(int mouseX, int mouseY) {
@@ -24,48 +104,18 @@ public class Mundo {
       Pixel p = pixels.get(i);
       if (p.contemPonto(mouseX, mouseY)) {
         pixelArrastado = p;
-        offsetX = mouseX - p.x;
-        offsetY = mouseY - p.y;
+        offsetX = (int) (mouseX - p.x);
+        offsetY = (int) (mouseY - p.y);
         return;
       }
     }
   }
 
-  public void notificarArrastado(int mouseX, int mouseY) {
-    if (pixelArrastado != null) {
-      int novoX = mouseX - offsetX;
-      int novoY = mouseY - offsetY;
-
-      if (isMovimentoValido(pixelArrastado, novoX, novoY)) {
-        pixelArrastado.x = novoX;
-        pixelArrastado.y = novoY;
-      }
-
-    }
-  }
-
   public void notificarSolto() {
-    pixelArrastado = null;
-  }
-
-  private boolean isMovimentoValido(Pixel pixelEmMovimento, int novoX, int novoY) {
-    if (novoX < 0 || (novoX + pixelEmMovimento.tamanho) > App.LARGURA ||
-        novoY < 0 || (novoY + pixelEmMovimento.tamanho) > App.ALTURA) {
-      return false;
+    if (pixelArrastado != null) {
+      // pixelArrastado.vx = 0;
+      // pixelArrastado.vy = 0;
+      pixelArrastado = null;
     }
-
-    for (Pixel outroPixel : pixels) {
-      if (outroPixel == pixelEmMovimento) {
-        continue;
-      }
-
-      Pixel cloneNaNovaPosicao = new Pixel(novoX, novoY, pixelEmMovimento.tamanho, 0);
-
-      if (cloneNaNovaPosicao.colideCom(outroPixel)) {
-        return false;
-      }
-    }
-
-    return true;
   }
 }

@@ -45,6 +45,8 @@ public class App extends JPanel implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
+    mundo.atualizar();
+
     repaint();
   }
 
